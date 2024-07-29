@@ -1,6 +1,7 @@
 import { useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 import { boardState } from '../atom';
+import { Draggable } from 'react-beautiful-dnd';
 
 const BoardWrapper = styled.div`
   min-width: 400px;
@@ -30,21 +31,30 @@ const TopBtn = styled.div`
 `;
 
 interface IProps {
-  id: number;
+  id: string;
+  idx: number;
 }
 
-const Board = ({ id }: IProps) => {
+const Board = ({ id, idx }: IProps) => {
   const boards = useRecoilValue(boardState);
 
   return (
-    <BoardWrapper>
-      <Top>
-        <TopTitle>{boards[id].name}</TopTitle>
-        <TopBtn>
-          <span className="material-symbols-outlined">add</span>
-        </TopBtn>
-      </Top>
-    </BoardWrapper>
+    <Draggable draggableId={id} index={idx}>
+      {(provided) => (
+        <BoardWrapper
+          ref={provided.innerRef}
+          {...provided.draggableProps}
+          {...provided.dragHandleProps}
+        >
+          <Top>
+            <TopTitle>{boards[Number(id)].name}</TopTitle>
+            <TopBtn>
+              <span className="material-symbols-outlined">add</span>
+            </TopBtn>
+          </Top>
+        </BoardWrapper>
+      )}
+    </Draggable>
   );
 };
 

@@ -4,6 +4,7 @@ import { useRecoilState } from 'recoil';
 import { styled } from 'styled-components';
 import { boardState } from './atom';
 import Board from './components/Board';
+import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 
 const Wrapper = styled.div`
   margin: 0 auto;
@@ -72,13 +73,13 @@ const DeleteBox = styled.div`
   height: 80px;
   background-color: ${(props) => props.theme.btnBgColor};
   border-radius: 10px;
+  margin-top: 80px;
   cursor: pointer;
   span {
     font-size: 50px;
   }
 `;
 const BoardsBox = styled.div`
-  margin-bottom: 80px;
   display: flex;
   overflow-x: auto;
 `;
@@ -104,6 +105,13 @@ function App() {
     setValue('boardName', '');
   };
 
+  const onDragEnd = (info: any) => {
+    console.log(info);
+  };
+  const onInvalid = (error: any) => {
+    console.log(error);
+  };
+
   return (
     <Wrapper>
       <Header>
@@ -114,7 +122,7 @@ function App() {
       </Header>
 
       <Body>
-        <NewBoardForm onSubmit={handleSubmit(onValid)}>
+        <NewBoardForm onSubmit={handleSubmit(onValid, onInvalid)}>
           <NewBoardInput
             {...register('boardName', { required: true })}
             placeholder="Please enter a new board name..."
@@ -123,17 +131,29 @@ function App() {
             <span className="material-symbols-outlined">add</span>
           </NewBoardBtn>
         </NewBoardForm>
-        <BoardsBox>
-          {boardKeys.map((boardKey) => (
-            <Board key={boardKey} id={Number(boardKey)} />
-          ))}
-        </BoardsBox>
 
-        {boardKeys.length > 0 ? (
-          <DeleteBox>
-            <span className="material-symbols-outlined">delete</span>
-          </DeleteBox>
-        ) : null}
+        <DragDropContext onDragEnd={onDragEnd}>
+          <Droppable droppableId="boardBox">
+            {(provided) => (
+              <BoardsBox {...provided.droppableProps} ref={provided.innerRef}>
+                {boardKeys.map((boardKey, idx) => (
+                  <Board key={boardKey} id={boardKey} idx={idx} />
+                ))}
+                {provided.placeholder}
+              </BoardsBox>
+            )}
+          </Droppable>
+
+          {boardKeys.length > 0 ? (
+            <Droppable droppableId="delete">
+              {(provided) => (
+                <DeleteBox {...provided.droppableProps} ref={provided.innerRef}>
+                  <span className="material-symbols-outlined">delete</span>
+                </DeleteBox>
+              )}
+            </Droppable>
+          ) : null}
+        </DragDropContext>
       </Body>
     </Wrapper>
   );
