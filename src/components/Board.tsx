@@ -1,14 +1,12 @@
-import { useRecoilValue } from 'recoil';
 import styled from 'styled-components';
-import { boardState } from '../atom';
+import { IBoard } from '../atom';
 import { Draggable } from 'react-beautiful-dnd';
 
 const BoardWrapper = styled.div`
-  min-width: 400px;
-  min-height: 500px;
-  background-color: hsla(0, 0%, 100%, 0.5);
-  height: 100px;
+  min-width: 300px;
   margin-right: 50px;
+  background-color: hsla(0, 0%, 100%, 0.5);
+  height: 50vh;
   border-top: ${(props) => props.theme.boardTop};
   padding: 10px 30px;
 `;
@@ -24,33 +22,36 @@ const TopTitle = styled.span`
   font-size: 25px;
   font-weight: bold;
 `;
+
+const TopBtnWrapper = styled.div`
+  display: flex;
+`;
+
 const TopBtn = styled.div`
   width: 50px;
   text-align: center;
   cursor: pointer;
 `;
 
-interface IProps {
-  id: string;
+interface IProps extends IBoard {
   idx: number;
 }
 
-const Board = ({ id, idx }: IProps) => {
-  const boards = useRecoilValue(boardState);
-
+const Board = ({ id, items, name, idx }: IProps) => {
   return (
     <Draggable draggableId={id} index={idx}>
       {(provided) => (
-        <BoardWrapper
-          ref={provided.innerRef}
-          {...provided.draggableProps}
-          {...provided.dragHandleProps}
-        >
+        <BoardWrapper ref={provided.innerRef} {...provided.draggableProps}>
           <Top>
-            <TopTitle>{boards[Number(id)].name}</TopTitle>
-            <TopBtn>
-              <span className="material-symbols-outlined">add</span>
-            </TopBtn>
+            <TopTitle>{name}</TopTitle>
+            <TopBtnWrapper>
+              <TopBtn>
+                <span className="material-symbols-outlined">add</span>
+              </TopBtn>
+              <TopBtn {...provided.dragHandleProps}>
+                <span className="material-symbols-outlined">more_horiz</span>
+              </TopBtn>
+            </TopBtnWrapper>
           </Top>
         </BoardWrapper>
       )}

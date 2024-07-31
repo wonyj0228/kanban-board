@@ -1,28 +1,26 @@
 import { atom } from 'recoil';
 
 /*
-{
-    123546521 : {
-        name : 'todo',
-        todo : [{key, text}, {} ]
-    }
-}
+[
+  {
+    key : 'b_123456789',
+    name : 'todo',
+    items : [{key, text}, {} ]
+  }
+]
 */
-interface IToDo {
-  key: number;
+interface IItem {
+  id: number;
   text: string;
 }
 
-interface IBoard {
+export interface IBoard {
+  id: string;
   name: string;
-  todo: IToDo[];
+  items: IItem[];
 }
 
-interface IBoards {
-  [key: number]: IBoard;
-}
-
-export const boardState = atom<IBoards>({
+export const boardState = atom<IBoard[]>({
   key: 'boards',
-  default: {},
+  default: [],
 });

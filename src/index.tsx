@@ -49,8 +49,10 @@ table {
 	border-spacing: 0;
 }
 
-body {
-  font-family: "Noto Sans", "Noto Sans KR", sans-serif;
+html, body, #root{
+	font-family: "Noto Sans", "Noto Sans KR", sans-serif;
+	height: 100%;
+	box-sizing: border-box;
 }
 `;
 
