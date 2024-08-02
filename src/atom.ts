@@ -9,8 +9,8 @@ import { atom } from 'recoil';
   }
 ]
 */
-interface IItem {
-  id: number;
+export interface IItem {
+  id: string;
   text: string;
 }
 
@@ -20,7 +20,9 @@ export interface IBoard {
   items: IItem[];
 }
 
+const initData = localStorage.getItem('to-do');
+
 export const boardState = atom<IBoard[]>({
   key: 'boards',
-  default: [],
+  default: initData ? JSON.parse(initData) : [],
 });

@@ -39,12 +39,13 @@ const NewBoardBtn = styled.button`
   cursor: pointer;
 `;
 
-const DeleteBox = styled.div`
+const DeleteBox = styled.div<{ $isDraggingOver: boolean }>`
   display: flex;
   justify-content: center;
   align-items: center;
   height: 80px;
-  background-color: ${(props) => props.theme.btnBgColor};
+  background-color: ${(props) =>
+    props.$isDraggingOver ? '#e56b6f' : props.theme.btnBgColor};
   border-radius: 10px;
   span {
     font-size: 50px;
@@ -83,6 +84,7 @@ const Contents = () => {
         name: data.boardName,
         items: [],
       };
+      localStorage.setItem('to-do', JSON.stringify([...prev, newBoardObj]));
       return [...prev, newBoardObj];
     });
     setValue('boardName', '');
@@ -99,6 +101,7 @@ const Contents = () => {
         setBoards((prevBoards) => {
           const newBoards = [...prevBoards];
           newBoards.splice(source.index, 1);
+          localStorage.setItem('to-do', JSON.stringify(newBoards));
           return newBoards;
         });
       }
@@ -114,6 +117,7 @@ const Contents = () => {
             const moveObj = newBoards[source.index];
             newBoards.splice(source.index, 1);
             newBoards.splice(destination.index, 0, moveObj);
+            localStorage.setItem('to-do', JSON.stringify(newBoards));
             return newBoards;
           });
         }
@@ -148,8 +152,12 @@ const Contents = () => {
 
         {boards.length > 0 ? (
           <Droppable droppableId="delete">
-            {(provided) => (
-              <DeleteBox {...provided.droppableProps} ref={provided.innerRef}>
+            {(provided, snapshot) => (
+              <DeleteBox
+                {...provided.droppableProps}
+                ref={provided.innerRef}
+                $isDraggingOver={snapshot.isDraggingOver}
+              >
                 <span className="material-symbols-outlined">delete</span>
               </DeleteBox>
             )}
