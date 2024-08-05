@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { IItem } from '../atom';
+import { useEffect, useRef } from 'react';
 
 const Wrapper = styled.div`
   width: 100%;
@@ -7,6 +8,7 @@ const Wrapper = styled.div`
   box-sizing: border-box;
   background-color: rgb(255, 255, 255);
   border-radius: 10px;
+  margin-bottom: 15px;
 `;
 
 const Content = styled.textarea`
@@ -20,9 +22,17 @@ const Content = styled.textarea`
 `;
 
 const Item = ({ id, text }: IItem) => {
+  const ref = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    if (ref.current) {
+      ref.current.style.height = ref.current.scrollHeight + 'px';
+    }
+  }, []);
+
   return (
     <Wrapper>
-      <Content readOnly>{text}</Content>
+      <Content ref={ref} value={text} readOnly></Content>
     </Wrapper>
   );
 };

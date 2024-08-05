@@ -6,7 +6,7 @@ import AddItem from './AddItem';
 import Item from './Item';
 
 const BoardWrapper = styled.div<{ $isDragging: boolean }>`
-  width: 300px;
+  min-width: 300px;
   margin-right: 50px;
   background-color: ${(props) => (props.$isDragging ? '#cb7d8e85' : '#F3F3F3')};
   height: 50vh;
@@ -14,6 +14,7 @@ const BoardWrapper = styled.div<{ $isDragging: boolean }>`
   padding: 10px 30px;
   box-shadow: ${(props) =>
     props.$isDragging ? '3px 3px 3px 3px rgba(0, 0, 0, 0.3)' : 'none'};
+  overflow-y: scroll;
 `;
 
 const Top = styled.div`
@@ -59,7 +60,11 @@ const Board = ({ id, items, name, idx }: IProps) => {
             <TopTitle>{name}</TopTitle>
             <TopBtnWrapper>
               <TopBtn onClick={addOnClick}>
-                <span className="material-symbols-outlined">add</span>
+                {add ? (
+                  <span className="material-symbols-outlined">remove</span>
+                ) : (
+                  <span className="material-symbols-outlined">add</span>
+                )}
               </TopBtn>
               <TopBtn {...provided.dragHandleProps}>
                 <span className="material-symbols-outlined">more_horiz</span>
@@ -68,7 +73,7 @@ const Board = ({ id, items, name, idx }: IProps) => {
           </Top>
           {add ? <AddItem boardId={id} /> : null}
           {items.map((item) => (
-            <Item {...item} />
+            <Item key={item.id} {...item} />
           ))}
         </BoardWrapper>
       )}

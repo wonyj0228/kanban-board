@@ -12,6 +12,7 @@ const Wrapper = styled.div`
   border-radius: 10px;
   border: 0.1px solid #b3c2d3;
   box-shadow: 0px 4px 3px 0px #66666681;
+  margin-bottom: 15px;
 `;
 
 const Content = styled.textarea`
@@ -22,6 +23,9 @@ const Content = styled.textarea`
   font-size: 16px;
   font-weight: 400;
   font-family: 'Noto Sans', 'Noto Sans KR', sans-serif;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 interface INewItem {
@@ -32,6 +36,8 @@ const AddItem = ({ boardId }: { boardId: string }) => {
   const { register, handleSubmit, setValue } = useForm<INewItem>();
   const setBoardState = useSetRecoilState(boardState);
   const formRef = useRef<HTMLFormElement>(null);
+  const textRef = useRef<HTMLTextAreaElement | null>(null);
+  const { ref, ...rest } = register('newItem');
 
   const onValid = (e: INewItem) => {
     setBoardState((prevState) => {
@@ -59,14 +65,32 @@ const AddItem = ({ boardId }: { boardId: string }) => {
       e.preventDefault();
       formRef.current?.requestSubmit();
     }
+
+    if (textRef.current) {
+      textRef.current.style.height = 'auto';
+      textRef.current.style.height = textRef.current.scrollHeight + 'px';
+    }
+  };
+
+  const onKeyUp = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (textRef.current) {
+      textRef.current.style.height = 'auto';
+      textRef.current.style.height = textRef.current.scrollHeight + 'px';
+    }
   };
 
   return (
     <Wrapper>
       <form ref={formRef} onSubmit={handleSubmit(onValid)}>
         <Content
-          {...register('newItem')}
+          {...rest}
+          ref={(e) => {
+            ref(e);
+            textRef.current = e;
+          }}
+          rows={1}
           onKeyDown={onKeyDown}
+          onKeyUp={onKeyUp}
           placeholder="Please enter your details..."
         />
       </form>
