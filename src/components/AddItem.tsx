@@ -32,7 +32,12 @@ interface INewItem {
   newItem: string;
 }
 
-const AddItem = ({ boardId }: { boardId: string }) => {
+interface IProps {
+  boardId: string;
+  setAdd: Function;
+}
+
+const AddItem = ({ boardId, setAdd }: IProps) => {
   const { register, handleSubmit, setValue } = useForm<INewItem>();
   const setBoardState = useSetRecoilState(boardState);
   const formRef = useRef<HTMLFormElement>(null);
@@ -64,6 +69,7 @@ const AddItem = ({ boardId }: { boardId: string }) => {
       }
       e.preventDefault();
       formRef.current?.requestSubmit();
+      setAdd((prev: boolean) => !prev);
     }
 
     if (textRef.current) {

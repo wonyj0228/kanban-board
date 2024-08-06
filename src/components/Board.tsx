@@ -1,20 +1,19 @@
 import styled from 'styled-components';
 import { IBoard } from '../atom';
-import { Draggable } from 'react-beautiful-dnd';
+import { Draggable, Droppable } from 'react-beautiful-dnd';
 import { useState } from 'react';
 import AddItem from './AddItem';
 import Item from './Item';
 
 const BoardWrapper = styled.div<{ $isDragging: boolean }>`
+  height: 50vh;
   min-width: 300px;
   margin-right: 50px;
   background-color: ${(props) => (props.$isDragging ? '#cb7d8e85' : '#F3F3F3')};
-  height: 50vh;
   border-top: ${(props) => props.theme.boardTop};
   padding: 10px 30px;
   box-shadow: ${(props) =>
     props.$isDragging ? '3px 3px 3px 3px rgba(0, 0, 0, 0.3)' : 'none'};
-  overflow-y: scroll;
 `;
 
 const Top = styled.div`
@@ -37,6 +36,22 @@ const TopBtn = styled.div`
   width: 50px;
   text-align: center;
   cursor: pointer;
+`;
+
+const Items = styled.div`
+  height: calc(50vh - 70px);
+  overflow-y: auto;
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #666;
+    border-radius: 20px;
+  }
+  &::-webkit-scrollbar-track {
+    background: #ddd;
+    border-radius: 20px;
+  }
 `;
 
 interface IProps extends IBoard {
@@ -71,10 +86,17 @@ const Board = ({ id, items, name, idx }: IProps) => {
               </TopBtn>
             </TopBtnWrapper>
           </Top>
-          {add ? <AddItem boardId={id} /> : null}
-          {items.map((item) => (
-            <Item key={item.id} {...item} />
-          ))}
+          <Droppable droppableId={`${id}`}>
+            {(provided) => (
+              <Items ref={provided.innerRef} {...provided.droppableProps}>
+                {add ? <AddItem boardId={id} setAdd={setAdd} /> : null}
+                {items.map((item, idx) => (
+                  <Item key={item.id} {...item} idx={idx} />
+                ))}
+                {provided.placeholder}
+              </Items>
+            )}
+          </Droppable>
         </BoardWrapper>
       )}
     </Draggable>

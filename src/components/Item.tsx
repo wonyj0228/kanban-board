@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { IItem } from '../atom';
 import { useEffect, useRef } from 'react';
+import { Draggable } from 'react-beautiful-dnd';
 
 const Wrapper = styled.div`
   width: 100%;
@@ -21,7 +22,11 @@ const Content = styled.textarea`
   font-family: 'Noto Sans', 'Noto Sans KR', sans-serif;
 `;
 
-const Item = ({ id, text }: IItem) => {
+interface IProps extends IItem {
+  idx: number;
+}
+
+const Item = ({ id, text, idx }: IProps) => {
   const ref = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -31,9 +36,17 @@ const Item = ({ id, text }: IItem) => {
   }, []);
 
   return (
-    <Wrapper>
-      <Content ref={ref} value={text} readOnly></Content>
-    </Wrapper>
+    <Draggable draggableId={id} index={idx}>
+      {(provided) => (
+        <Wrapper
+          ref={provided.innerRef}
+          {...provided.draggableProps}
+          {...provided.dragHandleProps}
+        >
+          <Content ref={ref} value={text} readOnly></Content>
+        </Wrapper>
+      )}
+    </Draggable>
   );
 };
 
