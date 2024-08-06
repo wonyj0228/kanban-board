@@ -2,8 +2,14 @@ import { useForm } from 'react-hook-form';
 import { boardState } from '../atom';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
-import { DragDropContext, Droppable, DropResult } from 'react-beautiful-dnd';
+import {
+  DragDropContext,
+  DragStart,
+  Droppable,
+  DropResult,
+} from 'react-beautiful-dnd';
 import Board from './Board';
+import { useState } from 'react';
 
 const Wrapper = styled.div`
   flex-grow: 1;
@@ -76,6 +82,8 @@ interface INewBoard {
 const Contents = () => {
   const { register, setValue, handleSubmit } = useForm<INewBoard>();
   const [boards, setBoards] = useRecoilState(boardState);
+  const [boardsDrop, setBoardsDrop] = useState(false);
+  const [boardDrop, setBoardDrop] = useState(false);
 
   const onValid = (data: INewBoard) => {
     setBoards((prev) => {
@@ -90,10 +98,23 @@ const Contents = () => {
     setValue('boardName', '');
   };
 
+  const onBeforeDragStart = (e: DragStart) => {
+    const moveType = e.draggableId.split('_')[0];
+    if (moveType === 'b') {
+      setBoardsDrop(false);
+      setBoardDrop(true);
+    } else if (moveType === 'i') {
+      setBoardsDrop(true);
+      setBoardDrop(false);
+    }
+  };
+
   const onDragEnd = (info: DropResult) => {
     if (!info.destination) return;
+
     const { destination, source, draggableId } = info;
     const draggableType = draggableId.split('_')[0];
+
     // 삭제
     if (destination.droppableId === 'delete') {
       //1. 게시판 삭제
@@ -104,8 +125,22 @@ const Contents = () => {
           localStorage.setItem('to-do', JSON.stringify(newBoards));
           return newBoards;
         });
+        //2. 아이템삭제
+      } else if (draggableType === 'i') {
+        setBoards((prevBoards) => {
+          const boardIdx = prevBoards.findIndex(
+            (board) => board.id === source.droppableId
+          );
+          const newBoard = [...prevBoards];
+          const sourceBoard = { ...prevBoards[boardIdx] };
+          const sourceItems = [...sourceBoard.items];
+          sourceItems.splice(source.index, 1);
+          sourceBoard.items = sourceItems;
+          newBoard.splice(boardIdx, 1, sourceBoard);
+          return newBoard;
+        });
       }
-      //2. 아이템삭제
+
       /////////////////////
       // 순서바꿈
     } else {
@@ -121,8 +156,52 @@ const Contents = () => {
             return newBoards;
           });
         }
+        // 2. 아이템순서
+      } else if (draggableType === 'i') {
+        if (source.droppableId === destination.droppableId) {
+          // 같은보드
+          setBoards((prevBoards) => {
+            const newBoards = [...prevBoards];
+            const boardIdx = prevBoards.findIndex(
+              (board) => board.id === source.droppableId
+            );
+            const targetBoard = { ...newBoards[boardIdx] };
+            const targetItems = [...targetBoard.items];
+            const moveItem = targetItems[source.index];
+            targetItems.splice(source.index, 1);
+            targetItems.splice(destination.index, 0, moveItem);
+            targetBoard.items = targetItems;
+            newBoards.splice(boardIdx, 1, targetBoard);
+            return newBoards;
+          });
+        } else if (source.droppableId !== destination.droppableId) {
+          // 다른보드
+          setBoards((prevBoards) => {
+            const newBoards = [...prevBoards];
+            const sourceBoardIdx = prevBoards.findIndex(
+              (board) => board.id === source.droppableId
+            );
+            const dstBoardIdx = prevBoards.findIndex(
+              (board) => board.id === destination.droppableId
+            );
+            const moveItem = prevBoards[sourceBoardIdx].items[source.index];
+
+            const sourceBoard = { ...newBoards[sourceBoardIdx] };
+            const sourceBoardItems = [...sourceBoard.items];
+            sourceBoardItems.splice(source.index, 1);
+            sourceBoard.items = sourceBoardItems;
+
+            const dstBoard = { ...newBoards[dstBoardIdx] };
+            const dstBoardItems = [...dstBoard.items];
+            dstBoardItems.splice(destination.index, 0, moveItem);
+            dstBoard.items = dstBoardItems;
+
+            newBoards[sourceBoardIdx] = sourceBoard;
+            newBoards[dstBoardIdx] = dstBoard;
+            return newBoards;
+          });
+        }
       }
-      // 2. 아이템순서
     }
   };
 
@@ -138,12 +217,24 @@ const Contents = () => {
         </NewBoardBtn>
       </NewBoardForm>
 
-      <DragDropContext onDragEnd={onDragEnd}>
-        <Droppable droppableId="boardBox" direction="horizontal">
+      <DragDropContext
+        onDragEnd={onDragEnd}
+        onBeforeDragStart={onBeforeDragStart}
+      >
+        <Droppable
+          droppableId="boardBox"
+          direction="horizontal"
+          isDropDisabled={boardsDrop}
+        >
           {(provided) => (
             <Boards {...provided.droppableProps} ref={provided.innerRef}>
               {boards.map((board, idx) => (
-                <Board key={board.id} {...board} idx={idx} />
+                <Board
+                  key={board.id}
+                  {...board}
+                  idx={idx}
+                  boardDrop={boardDrop}
+                />
               ))}
               {provided.placeholder}
             </Boards>

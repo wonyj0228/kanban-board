@@ -56,9 +56,10 @@ const Items = styled.div`
 
 interface IProps extends IBoard {
   idx: number;
+  boardDrop: boolean;
 }
 
-const Board = ({ id, items, name, idx }: IProps) => {
+const Board = ({ id, items, name, idx, boardDrop }: IProps) => {
   const [add, setAdd] = useState(false);
   const addOnClick = () => {
     setAdd((prev) => !prev);
@@ -86,7 +87,7 @@ const Board = ({ id, items, name, idx }: IProps) => {
               </TopBtn>
             </TopBtnWrapper>
           </Top>
-          <Droppable droppableId={`${id}`}>
+          <Droppable droppableId={`${id}`} isDropDisabled={boardDrop}>
             {(provided) => (
               <Items ref={provided.innerRef} {...provided.droppableProps}>
                 {add ? <AddItem boardId={id} setAdd={setAdd} /> : null}
