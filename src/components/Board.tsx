@@ -4,6 +4,7 @@ import { Draggable, Droppable } from 'react-beautiful-dnd';
 import { useState } from 'react';
 import AddItem from './AddItem';
 import Item from './Item';
+import { AnimatePresence, motion } from 'framer-motion';
 
 const BoardWrapper = styled.div<{ $isDragging: boolean }>`
   height: 50vh;
@@ -65,42 +66,58 @@ const Board = ({ id, items, name, idx, boardDrop }: IProps) => {
     setAdd((prev) => !prev);
   };
   return (
-    <Draggable draggableId={id} index={idx}>
-      {(provided, snapshot) => (
-        <BoardWrapper
-          ref={provided.innerRef}
-          {...provided.draggableProps}
-          $isDragging={snapshot.isDragging}
-        >
-          <Top>
-            <TopTitle>{name}</TopTitle>
-            <TopBtnWrapper>
-              <TopBtn onClick={addOnClick}>
-                {add ? (
-                  <span className="material-symbols-outlined">remove</span>
-                ) : (
-                  <span className="material-symbols-outlined">add</span>
-                )}
-              </TopBtn>
-              <TopBtn {...provided.dragHandleProps}>
-                <span className="material-symbols-outlined">more_horiz</span>
-              </TopBtn>
-            </TopBtnWrapper>
-          </Top>
-          <Droppable droppableId={`${id}`} isDropDisabled={boardDrop}>
-            {(provided) => (
-              <Items ref={provided.innerRef} {...provided.droppableProps}>
-                {add ? <AddItem boardId={id} setAdd={setAdd} /> : null}
-                {items.map((item, idx) => (
-                  <Item key={item.id} {...item} idx={idx} />
-                ))}
-                {provided.placeholder}
-              </Items>
-            )}
-          </Droppable>
-        </BoardWrapper>
-      )}
-    </Draggable>
+    <motion.div initial={{ y: -20 }} animate={{ y: 0 }}>
+      <Draggable draggableId={id} index={idx}>
+        {(provided, snapshot) => (
+          <BoardWrapper
+            ref={provided.innerRef}
+            {...provided.draggableProps}
+            $isDragging={snapshot.isDragging}
+          >
+            <Top>
+              <TopTitle>{name}</TopTitle>
+              <TopBtnWrapper>
+                <TopBtn onClick={addOnClick}>
+                  {add ? (
+                    <span className="material-symbols-outlined">remove</span>
+                  ) : (
+                    <span className="material-symbols-outlined">add</span>
+                  )}
+                </TopBtn>
+                <TopBtn {...provided.dragHandleProps}>
+                  <span className="material-symbols-outlined">more_horiz</span>
+                </TopBtn>
+              </TopBtnWrapper>
+            </Top>
+            <Droppable droppableId={`${id}`} isDropDisabled={boardDrop}>
+              {(provided) => (
+                <Items ref={provided.innerRef} {...provided.droppableProps}>
+                  <AnimatePresence>
+                    {add ? <AddItem boardId={id} setAdd={setAdd} /> : null}
+                  </AnimatePresence>
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{
+                      opacity: 1,
+                      transition: {
+                        delay: 0.3,
+                        type: 'spring',
+                        bounce: 0,
+                      },
+                    }}
+                  >
+                    {items.map((item, idx) => (
+                      <Item key={item.id} {...item} idx={idx} />
+                    ))}
+                  </motion.div>
+                  {provided.placeholder}
+                </Items>
+              )}
+            </Droppable>
+          </BoardWrapper>
+        )}
+      </Draggable>
+    </motion.div>
   );
 };
 

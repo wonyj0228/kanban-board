@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { IItem } from '../atom';
-import { useRef } from 'react';
 import { Draggable } from 'react-beautiful-dnd';
+import { motion, Variants } from 'framer-motion';
 
 const Wrapper = styled.div`
   width: 100%;
@@ -18,19 +18,37 @@ interface IProps extends IItem {
   idx: number;
 }
 
+const Variant: Variants = {
+  initial: {
+    opacity: 0,
+    y: 20,
+  },
+  animate: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: 'spring',
+      stiffness: 300,
+      damping: 24,
+    },
+  },
+};
+
 const Item = ({ id, text, idx }: IProps) => {
   return (
-    <Draggable draggableId={id} index={idx}>
-      {(provided) => (
-        <Wrapper
-          ref={provided.innerRef}
-          {...provided.draggableProps}
-          {...provided.dragHandleProps}
-        >
-          {text}
-        </Wrapper>
-      )}
-    </Draggable>
+    <motion.div variants={Variant} initial="initial" animate="animate">
+      <Draggable draggableId={id} index={idx}>
+        {(provided) => (
+          <Wrapper
+            ref={provided.innerRef}
+            {...provided.draggableProps}
+            {...provided.dragHandleProps}
+          >
+            {text}
+          </Wrapper>
+        )}
+      </Draggable>
+    </motion.div>
   );
 };
 

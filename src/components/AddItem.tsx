@@ -3,8 +3,9 @@ import { useForm } from 'react-hook-form';
 import { useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 import { boardState } from '../atom';
+import { motion, Variants } from 'framer-motion';
 
-const Wrapper = styled.div`
+const Wrapper = styled(motion.div)`
   width: 100%;
   padding: 10px 20px;
   box-sizing: border-box;
@@ -36,6 +37,27 @@ interface IProps {
   boardId: string;
   setAdd: Function;
 }
+
+const Variant: Variants = {
+  initial: {
+    opacity: 0,
+    y: -10,
+  },
+  animate: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: 'spring',
+      duration: 1,
+      stiffness: 400,
+    },
+  },
+  exit: {
+    opacity: 0,
+    y: 0,
+    rotateX: 90,
+  },
+};
 
 const AddItem = ({ boardId, setAdd }: IProps) => {
   const { register, handleSubmit, setValue } = useForm<INewItem>();
@@ -86,7 +108,7 @@ const AddItem = ({ boardId, setAdd }: IProps) => {
   };
 
   return (
-    <Wrapper>
+    <Wrapper variants={Variant} initial="initial" animate="animate" exit="exit">
       <form ref={formRef} onSubmit={handleSubmit(onValid)}>
         <Content
           {...rest}
