@@ -102,7 +102,6 @@ const Board = ({ id, items, name, idx, boardDrop }: IProps) => {
                       transition: {
                         delay: 0.3,
                         type: 'spring',
-                        bounce: 0,
                       },
                     }}
                   >

@@ -137,6 +137,7 @@ const Contents = () => {
           sourceItems.splice(source.index, 1);
           sourceBoard.items = sourceItems;
           newBoard.splice(boardIdx, 1, sourceBoard);
+          localStorage.setItem('to-do', JSON.stringify(newBoard));
           return newBoard;
         });
       }
@@ -172,6 +173,8 @@ const Contents = () => {
             targetItems.splice(destination.index, 0, moveItem);
             targetBoard.items = targetItems;
             newBoards.splice(boardIdx, 1, targetBoard);
+
+            localStorage.setItem('to-do', JSON.stringify(newBoards));
             return newBoards;
           });
         } else if (source.droppableId !== destination.droppableId) {
@@ -198,6 +201,8 @@ const Contents = () => {
 
             newBoards[sourceBoardIdx] = sourceBoard;
             newBoards[dstBoardIdx] = dstBoard;
+
+            localStorage.setItem('to-do', JSON.stringify(newBoards));
             return newBoards;
           });
         }
