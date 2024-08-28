@@ -1,5 +1,8 @@
-import { styled } from 'styled-components';
+import { styled, ThemeProvider } from 'styled-components';
 import Contents from './components/Contents';
+import { darkTheme, lightTheme } from './theme';
+import { useState } from 'react';
+import { motion } from 'framer-motion';
 
 const Wrapper = styled.div`
   display: flex;
@@ -18,33 +21,56 @@ const Header = styled.div`
 const Title = styled.span`
   font-size: 2rem;
   font-weight: bold;
+  color: ${(props) => props.theme.headerFontColor};
 `;
-const BtnMode = styled.div`
+const Dark = styled.div`
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 100px;
-  border-radius: 20px;
-  background-color: ${(props) => props.theme.btnBgColor};
-  box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.3);
-  cursor: pointer;
   span {
-    font-weight: bold;
-    font-size: 1rem;
+    color: ${(props) => props.theme.headerFontColor};
+    margin-right: 10px;
   }
+`;
+const Toggle = styled(motion.div)`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  justify-items: center;
+  align-items: center;
+  padding: 5px;
+  width: 80px;
+  height: 30px;
+  border-radius: 30px;
+  background-color: ${(props) => props.theme.btnBgColor};
+  cursor: pointer;
+`;
+
+const Circle = styled(motion.div)`
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: ${(props) => props.theme.toggleCircleColor};
 `;
 
 function App() {
+  const [dark, setDark] = useState(false);
+  const toggleClicked = () => setDark((prev) => !prev);
+
   return (
-    <Wrapper>
-      <Header>
-        <Title>KANBAN BOARD</Title>
-        <BtnMode>
-          <span>DARK🌙</span>
-        </BtnMode>
-      </Header>
-      <Contents />
-    </Wrapper>
+    <ThemeProvider theme={dark ? darkTheme : lightTheme}>
+      <Wrapper>
+        <Header>
+          <Title>KANBAN BOARD</Title>
+          <Dark>
+            <span>Dark mode🌙</span>
+            <Toggle onClick={toggleClicked}>
+              <div>{!dark ? <Circle layoutId="circle" /> : null}</div>
+              <div>{dark ? <Circle layoutId="circle" /> : null}</div>
+            </Toggle>
+          </Dark>
+        </Header>
+        <Contents />
+      </Wrapper>
+    </ThemeProvider>
   );
 }
 

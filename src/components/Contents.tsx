@@ -51,10 +51,11 @@ const DeleteBox = styled.div<{ $isDraggingOver: boolean }>`
   align-items: center;
   height: 80px;
   background-color: ${(props) =>
-    props.$isDraggingOver ? '#e56b6f' : props.theme.btnBgColor};
+    props.$isDraggingOver ? '#e56b6f' : props.theme.deleteBtnBgColor};
   border-radius: 10px;
   span {
     font-size: 50px;
+    color: ${(props) => props.theme.deleteBtnFontColor};
   }
 `;
 const Boards = styled.div`

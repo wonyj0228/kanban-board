@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { IBoard } from '../atom';
 import { Draggable, Droppable } from 'react-beautiful-dnd';
-import { useState } from 'react';
+import { memo, useState } from 'react';
 import AddItem from './AddItem';
 import Item from './Item';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -10,7 +10,8 @@ const BoardWrapper = styled.div<{ $isDragging: boolean }>`
   height: 50vh;
   min-width: 300px;
   margin-right: 50px;
-  background-color: ${(props) => (props.$isDragging ? '#cb7d8e85' : '#F3F3F3')};
+  background-color: ${(props) =>
+    props.$isDragging ? '#cb7d8e85' : props.theme.boardBgColor};
   border-top: ${(props) => props.theme.boardTop};
   padding: 10px 30px;
   box-shadow: ${(props) =>
@@ -120,4 +121,4 @@ const Board = ({ id, items, name, idx, boardDrop }: IProps) => {
   );
 };
 
-export default Board;
+export default memo(Board);

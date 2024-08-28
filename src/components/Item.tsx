@@ -2,12 +2,13 @@ import styled from 'styled-components';
 import { IItem } from '../atom';
 import { Draggable } from 'react-beautiful-dnd';
 import { motion, Variants } from 'framer-motion';
+import { memo } from 'react';
 
 const Wrapper = styled.div`
   width: 100%;
   padding: 15px 20px;
   box-sizing: border-box;
-  background-color: rgb(255, 255, 255);
+  background-color: ${(props) => props.theme.itemBgColor};
   border-radius: 10px;
   margin-bottom: 15px;
   white-space: pre-wrap;
@@ -52,4 +53,4 @@ const Item = ({ id, text, idx }: IProps) => {
   );
 };
 
-export default Item;
+export default memo(Item);
