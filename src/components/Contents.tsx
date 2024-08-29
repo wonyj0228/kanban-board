@@ -93,7 +93,6 @@ const Contents = () => {
         name: data.boardName,
         items: [],
       };
-      localStorage.setItem('to-do', JSON.stringify([...prev, newBoardObj]));
       return [...prev, newBoardObj];
     });
     setValue('boardName', '');
@@ -123,7 +122,6 @@ const Contents = () => {
         setBoards((prevBoards) => {
           const newBoards = [...prevBoards];
           newBoards.splice(source.index, 1);
-          localStorage.setItem('to-do', JSON.stringify(newBoards));
           return newBoards;
         });
         //2. 아이템삭제
@@ -138,7 +136,6 @@ const Contents = () => {
           sourceItems.splice(source.index, 1);
           sourceBoard.items = sourceItems;
           newBoard.splice(boardIdx, 1, sourceBoard);
-          localStorage.setItem('to-do', JSON.stringify(newBoard));
           return newBoard;
         });
       }
@@ -154,7 +151,6 @@ const Contents = () => {
             const moveObj = newBoards[source.index];
             newBoards.splice(source.index, 1);
             newBoards.splice(destination.index, 0, moveObj);
-            localStorage.setItem('to-do', JSON.stringify(newBoards));
             return newBoards;
           });
         }
@@ -175,7 +171,6 @@ const Contents = () => {
             targetBoard.items = targetItems;
             newBoards.splice(boardIdx, 1, targetBoard);
 
-            localStorage.setItem('to-do', JSON.stringify(newBoards));
             return newBoards;
           });
         } else if (source.droppableId !== destination.droppableId) {
@@ -203,7 +198,6 @@ const Contents = () => {
             newBoards[sourceBoardIdx] = sourceBoard;
             newBoards[dstBoardIdx] = dstBoard;
 
-            localStorage.setItem('to-do', JSON.stringify(newBoards));
             return newBoards;
           });
         }

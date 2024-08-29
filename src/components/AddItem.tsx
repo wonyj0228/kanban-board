@@ -77,8 +77,6 @@ const AddItem = ({ boardId, setAdd }: IProps) => {
       const newBoards = { ...prevState[idx], items: newItems };
       const newState = [...prevState];
       newState[idx] = newBoards;
-
-      localStorage.setItem('to-do', JSON.stringify(newState));
       setValue('newItem', '');
       return newState;
     });

@@ -1,4 +1,5 @@
 import { atom } from 'recoil';
+import { recoilPersist } from 'recoil-persist';
 
 /*
 [
@@ -20,9 +21,13 @@ export interface IBoard {
   items: IItem[];
 }
 
-const initData = localStorage.getItem('to-do');
+const { persistAtom } = recoilPersist({
+  key: 'to-do',
+  storage: localStorage,
+});
 
 export const boardState = atom<IBoard[]>({
   key: 'boards',
-  default: initData ? JSON.parse(initData) : [],
+  default: [],
+  effects_UNSTABLE: [persistAtom],
 });
